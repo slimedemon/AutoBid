@@ -22,9 +22,19 @@ public class AuctionController: ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
+    public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string updatedAfter = null)
     {
-        var auctions = await _context.Auctions
+        var query = _context.Auctions.AsQueryable();
+            
+        if(!string.IsNullOrWhiteSpace(updatedAfter) && DateTime.TryParse(updatedAfter, out DateTime date))
+        {
+            var utcDate = date.ToUniversalTime();
+            query = query.Where(a => 
+                a.UpdatedAt.ToUniversalTime() > utcDate
+            );
+        }
+
+        var auctions = await query
             .Include(a => a.Item)
             .OrderBy(a => a.Item.Make)
             .AsNoTracking()
