@@ -1,3 +1,6 @@
+using Contracts;
+using MassTransit;
+using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.RequestHelper;
 using SearchService.Services;
@@ -7,6 +10,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(HttpPollyHelper.GetAsyncPolicy());
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+
+    x.UsingRabbitMq((context, configure) =>
+    {
+        configure.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
