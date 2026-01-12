@@ -19,6 +19,8 @@ public class AuctionCreatedConsumer : IConsumer<AuctionCreated>
     {
         var item = _mapper.Map<Item>(context.Message);
 
+        Console.WriteLine($"Received AuctionCreated event for AuctionId: {context.Message.Id}");
+
         await item.SaveAsync();
     }
 }

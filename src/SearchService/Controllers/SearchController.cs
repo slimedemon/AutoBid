@@ -23,19 +23,20 @@ public class SearchController: ControllerBase
             query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
         }
 
-        query = searchParams.OrderBy.ToLower() switch
+        query = searchParams.OrderBy?.ToLower() switch
         {
             "make" => query.Sort(i => i.Make, Order.Ascending),
             "new" => query.Sort(i => i.CreatedAt, Order.Descending),
             _ => query.Sort(i => i.AuctionEnd, Order.Ascending)
         };
 
-        query = searchParams.FilterBy.ToLower() switch
+        query = searchParams.FilterBy?.ToLower() switch
         {
             "finished" => query.Match(i => i.AuctionEnd < DateTime.UtcNow),
             "endingsoon" => query.Match(i => i.AuctionEnd < DateTime.UtcNow.AddHours(6)
                 && i.AuctionEnd > DateTime.UtcNow),
-            _ => query.Match(i => i.AuctionEnd > DateTime.UtcNow)
+            "ongoing" => query.Match(i => i.AuctionEnd > DateTime.UtcNow),
+            _ => query
         };
 
         if (!string.IsNullOrWhiteSpace(searchParams.Seller))
