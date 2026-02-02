@@ -78,8 +78,6 @@ public class AuctionController: ControllerBase
         var auctionCreatedEvent = _mapper.Map<AuctionCreated>(newAuction);
         await _publishEndpoint.Publish(auctionCreatedEvent);
 
-        Console.WriteLine($"Published AuctionCreated event for AuctionId: {auction.Id}");
-
         return CreatedAtAction(
             nameof(GetAutionById), 
             new { id = auction.Id }, 
@@ -105,6 +103,11 @@ public class AuctionController: ControllerBase
 
         if(!result) return BadRequest("Failed to update auction");
 
+        // Publish event to RabbitMQ
+        var updatedAuction = _mapper.Map<AuctionDto>(auction);
+        var auctionUpdatedEvent = _mapper.Map<AuctionUpdated>(updatedAuction);
+        await _publishEndpoint.Publish(auctionUpdatedEvent);
+
         return Ok(_mapper.Map<AuctionDto>(auction));
     }
 
@@ -123,6 +126,11 @@ public class AuctionController: ControllerBase
 
         if(!result) return BadRequest("Failed to delete auction");
 
+        // Publish event to RabbitMQ
+        var deletedAuction = _mapper.Map<AuctionDto>(auction);
+        var auctionDeletedEvent = _mapper.Map<AuctionDeleted>(deletedAuction);
+        await _publishEndpoint.Publish(auctionDeletedEvent);
+        
         return Ok();
     }
 }

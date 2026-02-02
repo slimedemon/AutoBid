@@ -26,6 +26,12 @@ public class MapperProfiles: Profile
 
         // Map AuctionCreateDto and AuctionCreated
         CreateMap<AuctionDto, AuctionCreated>();
+
+        // Map AuctionDto to AuctionUpdated
+        CreateMap<AuctionDto, AuctionUpdated>();
+
+        // Map AuctionDto to AuctionDeleted
+        CreateMap<AuctionDto, AuctionDeleted>();
     }
 
 }
