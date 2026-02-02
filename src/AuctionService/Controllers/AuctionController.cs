@@ -68,15 +68,15 @@ public class AuctionController: ControllerBase
         auction.Seller = User?.Identity?.Name ?? "Anonymous";
        
         _context.Auctions.Add(auction);
-        
-        var result = await _context.SaveChangesAsync() > 0;
-
-        if(!result) return BadRequest("Failed to create auction");
 
         // Publish event to RabbitMQ
         var newAuction = _mapper.Map<AuctionDto>(auction);
         var auctionCreatedEvent = _mapper.Map<AuctionCreated>(newAuction);
         await _publishEndpoint.Publish(auctionCreatedEvent);
+        
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Failed to create auction");       
 
         return CreatedAtAction(
             nameof(GetAutionById), 
@@ -99,14 +99,14 @@ public class AuctionController: ControllerBase
         _mapper.Map(updateAuctionDto, auction);
         auction.UpdatedAt = DateTime.UtcNow;
 
-        var result = await _context.SaveChangesAsync() > 0;
-
-        if(!result) return BadRequest("Failed to update auction");
-
         // Publish event to RabbitMQ
         var updatedAuction = _mapper.Map<AuctionDto>(auction);
         var auctionUpdatedEvent = _mapper.Map<AuctionUpdated>(updatedAuction);
         await _publishEndpoint.Publish(auctionUpdatedEvent);
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Failed to update auction");
 
         return Ok(_mapper.Map<AuctionDto>(auction));
     }
@@ -122,14 +122,14 @@ public class AuctionController: ControllerBase
 
         _context.Auctions.Remove(auction);
 
-        var result = await _context.SaveChangesAsync() > 0;
-
-        if(!result) return BadRequest("Failed to delete auction");
-
         // Publish event to RabbitMQ
         var deletedAuction = _mapper.Map<AuctionDto>(auction);
         var auctionDeletedEvent = _mapper.Map<AuctionDeleted>(deletedAuction);
         await _publishEndpoint.Publish(auctionDeletedEvent);
+
+        var result = await _context.SaveChangesAsync() > 0;
+
+        if(!result) return BadRequest("Failed to delete auction");
         
         return Ok();
     }
