@@ -59,12 +59,13 @@ namespace IdentityService.Pages.Account.Register
                     });
 
                     RegisterSuccess = true;
-                    return Page();
                 }
-         
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
             }
 
