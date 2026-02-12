@@ -1,4 +1,3 @@
-using AutoMapper;
 using Contracts;
 using MassTransit;
 using MongoDB.Entities;
@@ -12,6 +11,11 @@ public class AuctionDeletedConsumer : IConsumer<AuctionDeleted>
     {
         Console.WriteLine("--> Consuming auction deleted: " + context.Message.Id);
 
-        await DB.DeleteAsync<Item>(context.Message.Id);
+        var result = await DB.DeleteAsync<Item>(context.Message.Id);
+
+        if (!result.IsAcknowledged)
+        {
+            throw new MessageException(typeof(AuctionDeleted), $"Problem with deleting item from mongodb");
+        }
     }
 }

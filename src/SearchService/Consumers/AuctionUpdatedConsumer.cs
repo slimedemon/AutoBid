@@ -37,6 +37,11 @@ public class AuctionUpdatedConsumer : IConsumer<AuctionUpdated>
         if (context.Message.Year != null && context.Message.Year > 0)
             update = update.Modify(i => i.Year, context.Message.Year);
 
-        await update.ExecuteAsync();
+        var result = await update.ExecuteAsync();
+        
+        if (!result.IsAcknowledged)
+        {
+            throw new MessageException(typeof(AuctionUpdated), $"Problem with updating item in mongodb");
+        }
     }
 }

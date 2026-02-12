@@ -5,6 +5,7 @@ using AuctionService.Entities;
 using AutoMapper;
 using Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,12 +61,13 @@ public class AuctionController: ControllerBase
         return Ok(_mapper.Map<AuctionDto>(auction));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto createAuctionDto)
     {
         var auction = _mapper.Map<Auction>(createAuctionDto);
 
-        auction.Seller = User?.Identity?.Name ?? "Anonymous";
+        auction.Seller = User.Identity.Name;
        
         _context.Auctions.Add(auction);
 
@@ -85,6 +87,7 @@ public class AuctionController: ControllerBase
         );
     }
 
+    [Authorize]
     [HttpPut("{id:Guid}")]
     public async Task<ActionResult<AuctionDto>> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
     {
@@ -94,6 +97,8 @@ public class AuctionController: ControllerBase
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if(auction is null) return NotFound();
+
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         // Map the updated fields
         _mapper.Map(updateAuctionDto, auction);
@@ -111,6 +116,7 @@ public class AuctionController: ControllerBase
         return Ok(_mapper.Map<AuctionDto>(auction));
     }
 
+    [Authorize]
     [HttpDelete("{id:Guid}")]
     public async Task<ActionResult> DeleteAuction(Guid id)
     {
@@ -118,7 +124,7 @@ public class AuctionController: ControllerBase
 
         if(auction is null) return NotFound();
 
-        // TODO: Check seller == User.Identity.Name
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         _context.Auctions.Remove(auction);
 
