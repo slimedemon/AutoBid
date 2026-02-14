@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
-  monngodb:
+  mongodb:
     image: mongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
@@ -26,6 +26,24 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+  auction-svc:
+    image: auction-svc
+    build:
+      context: .
+      dockerfile: src/AuctionService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=AuctionDb;User Id=postgres;Password=postgrespw;
+      - IdentityServerUrl=http://identity-svc
+    ports:
+      - 7001:80
+    depends_on:
+      - postgres
+      - rabbitmq
 volumes:
   pgdata:
   mongodata:
