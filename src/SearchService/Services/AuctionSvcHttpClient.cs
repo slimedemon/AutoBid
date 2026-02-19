@@ -24,7 +24,7 @@ public class AuctionSvcHttpClient
 
         var items = await _httpClient
             .GetFromJsonAsync<List<Item>>(
-                $"{_config["AuctionService"] ?? "http://localhost:7001"}/api/auctions?updatedAfter={lastUpdated ?? string.Empty}"
+                $"{_config["AuctionServiceUrl"] ?? "http://localhost:7001"}/api/auctions?updatedAfter={lastUpdated ?? string.Empty}"
             );
         
         return items ?? new List<Item>();
