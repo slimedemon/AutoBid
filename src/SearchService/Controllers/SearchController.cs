@@ -16,8 +16,6 @@ public class SearchController: ControllerBase
     {
         var query = DB.PagedSearch<Item, Item>();
 
-        query.Sort(i => i.Make, Order.Ascending);
-
         if(!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
         {
             query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
@@ -25,7 +23,8 @@ public class SearchController: ControllerBase
 
         query = searchParams.OrderBy?.ToLower() switch
         {
-            "make" => query.Sort(i => i.Make, Order.Ascending),
+            "make" => query.Sort(i => i.Make, Order.Ascending)
+                .Sort(i => i.Model, Order.Ascending),
             "new" => query.Sort(i => i.CreatedAt, Order.Descending),
             _ => query.Sort(i => i.AuctionEnd, Order.Ascending)
         };
@@ -35,8 +34,7 @@ public class SearchController: ControllerBase
             "finished" => query.Match(i => i.AuctionEnd < DateTime.UtcNow),
             "endingsoon" => query.Match(i => i.AuctionEnd < DateTime.UtcNow.AddHours(6)
                 && i.AuctionEnd > DateTime.UtcNow),
-            "ongoing" => query.Match(i => i.AuctionEnd > DateTime.UtcNow),
-            _ => query
+            _ => query.Match(i => i.AuctionEnd > DateTime.UtcNow)
         };
 
         if (!string.IsNullOrWhiteSpace(searchParams.Seller))
@@ -56,7 +54,7 @@ public class SearchController: ControllerBase
 
         return Ok(new
         {
-            items = result.Results,
+            results = result.Results,
             pageCount = result.PageCount,
             totalCount = result.TotalCount
         });
