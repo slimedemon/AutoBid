@@ -63,7 +63,7 @@ export default function Filters() {
 
             <div>
                 <span className="uppercase text-sm text-gray-500 mr-2">Page Size:</span>
-                <ButtonGroup>
+                <ButtonGroup outline>
                     {pageSizeButtons.map((value, index) => (
                         <Button
                             key={index}
