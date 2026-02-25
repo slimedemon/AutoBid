@@ -74,7 +74,7 @@ internal static class HostingExtensions
 
                 if (builder.Environment.IsEnvironment("Docker"))
                 {
-                    options.IssuerUri = "https://localhost:5000";
+                    options.IssuerUri = "http://localhost:5000";
                 }
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)

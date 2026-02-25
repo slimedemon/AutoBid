@@ -39,12 +39,12 @@ public class SearchController: ControllerBase
 
         if (!string.IsNullOrWhiteSpace(searchParams.Seller))
         {
-            query.Match(i => i.Seller.Contains(searchParams.Seller, StringComparison.OrdinalIgnoreCase));
+            query.Match(i => i.Seller == searchParams.Seller);
         }
 
         if(!string.IsNullOrWhiteSpace(searchParams.Winner))
         {
-            query.Match(i => i.Winner.Contains(searchParams.Winner, StringComparison.OrdinalIgnoreCase));
+            query.Match(i => i.Winner == searchParams.Winner);
         }
             
         query.PageSize(searchParams.PageSize);

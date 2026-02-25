@@ -30,3 +30,8 @@ body {
 [role=button], button {
   cursor: pointer;
 }
+
+.react-datepicker-wrapper {
+  display: block !important;
+  width: 100%;
+}

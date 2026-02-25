@@ -17,7 +17,7 @@ export type Auction = {
   mileage: number
   imageUrl: string
   status: string
-  reservePrice?: number
+  reservePrice: number
   soldAmount?: number
   currentHighBid?: number
   id: string
