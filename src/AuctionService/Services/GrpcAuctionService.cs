@@ -1,4 +1,5 @@
 using AuctionService.Data;
+using Contracts.Grpc;
 using Grpc.Core;
 
 namespace AuctionService.Services;

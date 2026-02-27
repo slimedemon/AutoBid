@@ -1,4 +1,4 @@
-using AuctionService;
+using Contracts.Grpc;
 using BiddingService.Models;
 using Grpc.Net.Client;
 

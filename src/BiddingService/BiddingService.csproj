@@ -29,7 +29,8 @@
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
 
-    <ItemGroup>
-    <Protobuf Include="protos\auctions.proto" GrpcServices="Client" />
+  <ItemGroup>
+    <!-- Link to shared proto file from Contracts project -->
+    <Protobuf Include="..\Contracts\protos\auctions.proto" GrpcServices="Client" Link="protos\auctions.proto" />
   </ItemGroup>
 </Project>

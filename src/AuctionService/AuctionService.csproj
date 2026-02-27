@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="protos\auctions.proto" GrpcServices="Server" />
+    <!-- Link to shared proto file from Contracts project -->
+    <Protobuf Include="..\Contracts\protos\auctions.proto" GrpcServices="Server" Link="protos\auctions.proto" />
   </ItemGroup>
 </Project>

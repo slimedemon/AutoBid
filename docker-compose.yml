@@ -53,10 +53,10 @@ services:
       - RabbitMq__Host=rabbitmq
       - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=AuctionDb;User Id=postgres;Password=postgrespw;
       - IdentityServerUrl=http://identity-svc
-      - Kestrel__Enpoints__Grpc_Protocols=Http2
-      - Kestrel__Enpoints__Grpc_Url=http://+:7777
-      - Kestrel__Enpoints__WebApi__Protocols=Http1
-      - Kestrel__Enpoints__WebApi__Url=http://+:80
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+      - Kestrel__Endpoints__Grpc__Url=http://+:7777
+      - Kestrel__Endpoints__WebApi__Protocols=Http1
+      - Kestrel__Endpoints__WebApi__Url=Http://+:80
     ports:
       - 7001:80
       - 7777:7777
