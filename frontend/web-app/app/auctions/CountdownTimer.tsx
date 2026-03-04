@@ -1,6 +1,8 @@
 'use client';
 
+import { useBidStore } from "@/hooks/useBidStore";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { zeroPad } from "react-countdown";
 
 // Renderer callback with condition
@@ -30,9 +32,18 @@ type Props = {
 const Countdown = dynamic(() => import("react-countdown"), { ssr: false });
 
 export default function CountdownTimer({ auctionEnd }: Props) {
+    const setOpen = useBidStore(state => state.setOpen);
+    const pathname = usePathname();
+
+    function auctionFinished() {
+        if (pathname.startsWith('/auctions/details/')) {
+            setOpen(false);
+        }
+    }
+
     return (
         <div className="text-sm text-gray-500">
-            <Countdown date={auctionEnd} renderer={renderer} />
+            <Countdown date={auctionEnd} renderer={renderer} onComplete={auctionFinished} />
         </div>
     )
 };

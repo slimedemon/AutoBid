@@ -27,11 +27,18 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-[role=button], button {
+[role=button],
+button {
   cursor: pointer;
 }
 
 .react-datepicker-wrapper {
   display: block !important;
   width: 100%;
+}
+
+@layer components {
+  .input-custom {
+    @apply grow pl-5 bg-transparent focus:outline-none border-transparent focus:border-transparent focus:ring-0 text-sm text-gray-600
+  }
 }

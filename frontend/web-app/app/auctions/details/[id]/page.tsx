@@ -1,4 +1,4 @@
-import { getDetailsViewData } from "@/app/actions/auctionActions";
+import { getBidsForAuction, getDetailsViewData } from "@/app/actions/auctionActions";
 import Heading from "@/app/components/Heading";
 import CountdownTimer from "../../CountdownTimer";
 import CarImage from "../../CarImage";
@@ -6,11 +6,14 @@ import DetailedSpecs from "./DetailedSpecs";
 import EditButton from "./EditButton";
 import { getCurrentUser } from "@/app/actions/authAction";
 import DeleteButton from "./DeleteButton";
+import BidItem from "./BidItem";
+import BidList from "./BidList";
 
 export default async function Details({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const data = await getDetailsViewData(id);
     const user = await getCurrentUser();
+    const bids = await getBidsForAuction(id);
 
     return (
         <>
@@ -35,9 +38,7 @@ export default async function Details({ params }: { params: Promise<{ id: string
                 rounded-lg overflow-hidden">
                     <CarImage imageUrl={data.imageUrl} />
                 </div>
-                <div className="border-2 rounded-lg p-2 bg-gray-300">
-                    <Heading title="Bids" />
-                </div>
+               <BidList user={user} auction={data} />
             </div>
 
             <div className="mt-3 grid grid-cols-1 rounded-lg">

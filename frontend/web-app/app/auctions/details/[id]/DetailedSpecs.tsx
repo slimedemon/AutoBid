@@ -7,7 +7,6 @@ type Props = {
     auction: Auction
 }
 export default function DetailedSpecs({auction}: Props) {
-    console.log(auction);
     return (
         <Table striped={true}>
             <TableBody className="divide-y">
