@@ -91,9 +91,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
+      - IssuerUri=https://id.autobid.local
+      - ClientApp=https://app.autobid.local
       - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgrespw;
-    ports:
-      - 5001:80
+      - VIRTUAL_HOST=id.autobid.local
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,10 +106,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
-      - IdentityServerUrl=http://identity-svc
-      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgrespw;
-    ports:
-      - 6001:80
+      - ClientApp=https://app.autobid.local
+      - VIRTUAL_HOST=api.autobid.local
     depends_on:
       - postgres
   bid-svc:
@@ -144,6 +143,31 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+  web-app:
+    image: web-app
+    build:
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+    volumes:
+     - /var/lib/web/data
+    environment:
+      - AUTH_SECRET=3028bc2e7e3ecfc1f14ef13c824477e479c65d710fd773b6fde952465da556a9
+      - API_URL=http://gateway-svc/
+      - ID_URL=https://id.autobid.local
+      - ID_URL_INTERNAL=http://identity-svc
+      - AUTH_URL=https://app.autobid.local
+      - AUTH_URL_INTERNAL=http://web-app:3000
+      - VIRTUAL_HOST=app.autobid.local
+      - VIRTUAL_PORT=3000
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./devcerts:/etc/nginx/certs
 volumes:
   pgdata:
   mongodata:

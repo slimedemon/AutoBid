@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import Heading from "../components/Heading";
 import AuthTest from "./AuthTest";
 
-export default async function page() {
+export default async function Session() {
     const session = await auth();
 
     return (
