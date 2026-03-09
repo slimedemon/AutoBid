@@ -15,10 +15,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 url: `${process.env.ID_URL}/connect/authorize`,
             },
             token: {
-                url: `${process.env.ID_URL_INTERNAL}/connect/token`,
+                url: `${process.env.ID_URL_INTERNAL || process.env.ID_URL}/connect/token`,
             },
             userinfo: {
-                url: `${process.env.ID_URL_INTERNAL}/connect/token`,
+                url: `${process.env.ID_URL_INTERNAL || process.env.ID_URL}/connect/token`,
             },
             idToken: true,
         } as OIDCConfig<Omit<Profile, "username">>),

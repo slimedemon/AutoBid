@@ -18,8 +18,8 @@ export default function Logo() {
     }
     
     return (
-        <div onClick={handleReset} className="cursor-pointer flex items-center gap-2 text-3xl font-semibold text-red-500">
-            <AiOutlineCar size={34} />
+        <div onClick={handleReset} className="cursor-pointer flex items-center gap-2 text-xl md:text-2xl lg:text-3xl font-semibold text-red-500 whitespace-nowrap">
+            <AiOutlineCar className="w-6 h-6 md:w-8 md:h-8" />
             <div>Cars Auctions</div>
         </div>
     )

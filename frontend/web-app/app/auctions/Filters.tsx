@@ -23,10 +23,10 @@ export default function Filters() {
     const setParams = useParamsStore(state => state.setParams);
 
     return (
-        <div className="flex justify-between items-center mb-4">
-            <div>
-                <span className="uppercase text-sm text-gray-500 mr-2">Filter By:</span>
-                    <ButtonGroup outline>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-4">
+            <div className="w-full lg:w-auto">
+                <span className="uppercase text-xs md:text-sm text-gray-500 mr-2 block sm:inline mb-2 sm:mb-0">Filter By:</span>
+                    <ButtonGroup outline className="flex-wrap">
                         {filterButtons.map((button) => {
                         const Icon = button.icon;
                         return (
@@ -34,17 +34,17 @@ export default function Filters() {
                                 key={button.value}
                                 onClick={() => setParams({ filterBy: button.value })}
                                 color={`${filterBy === button.value ? 'red' : 'gray'}`}
-                                className="focus:ring-0">
-                                <Icon className="mr-3 h-4 w-4" size={16} />
-                                {button.label}
+                                className="focus:ring-0 text-xs md:text-sm">
+                                <Icon className="mr-1 md:mr-3 h-3 w-3 md:h-4 md:w-4" />
+                                <span className="sm:inline">{button.label}</span>
                             </Button>
                         )
                     })}
                 </ButtonGroup>
             </div>
-            <div>
-                <span className="uppercase text-sm text-gray-500 mr-2">Order By:</span>
-                <ButtonGroup outline>
+            <div className="w-full lg:w-auto">
+                <span className="uppercase text-xs md:text-sm text-gray-500 mr-2 block sm:inline mb-2 sm:mb-0">Order By:</span>
+                <ButtonGroup outline className="flex-wrap">
                     {orderButtons.map((button) => {
                         const Icon = button.icon;
                         return (
@@ -52,24 +52,24 @@ export default function Filters() {
                                 key={button.value}
                                 onClick={() => setParams({ orderBy: button.value })}
                                 color={`${orderBy === button.value ? 'red' : 'gray'}`}
-                                className="focus:ring-0">
-                                <Icon className="mr-3 h-4 w-4" size={16} />
-                                {button.label}
+                                className="focus:ring-0 text-xs md:text-sm">
+                                <Icon className="mr-1 md:mr-3 h-3 w-3 md:h-4 md:w-4" />
+                                <span className="sm:inline">{button.label}</span>
                             </Button>
                         )
                     })}
                 </ButtonGroup>
             </div>
 
-            <div>
-                <span className="uppercase text-sm text-gray-500 mr-2">Page Size:</span>
+            <div className="w-full lg:w-auto">
+                <span className="uppercase text-xs md:text-sm text-gray-500 mr-2 block sm:inline mb-2 sm:mb-0">Page Size:</span>
                 <ButtonGroup outline>
                     {pageSizeButtons.map((value, index) => (
                         <Button
                             key={index}
                             onClick={() => setParams({ pageSize: value })}
                             color={`${pageSize === value ? 'red' : 'gray'}`}
-                            className="focus:ring-0"
+                            className="focus:ring-0 text-xs md:text-sm"
                         >
                             {value}
                         </Button>

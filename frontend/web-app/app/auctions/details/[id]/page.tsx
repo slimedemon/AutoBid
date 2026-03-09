@@ -1,4 +1,4 @@
-import { getBidsForAuction, getDetailsViewData } from "@/app/actions/auctionActions";
+import { getDetailsViewData } from "@/app/actions/auctionActions";
 import Heading from "@/app/components/Heading";
 import CountdownTimer from "../../CountdownTimer";
 import CarImage from "../../CarImage";
@@ -6,18 +6,16 @@ import DetailedSpecs from "./DetailedSpecs";
 import EditButton from "./EditButton";
 import { getCurrentUser } from "@/app/actions/authAction";
 import DeleteButton from "./DeleteButton";
-import BidItem from "./BidItem";
 import BidList from "./BidList";
 
 export default async function Details({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const data = await getDetailsViewData(id);
     const user = await getCurrentUser();
-    const bids = await getBidsForAuction(id);
 
     return (
         <>
-            <div className="flex justify-between">
+            <div className="flex flex-col md:flex-row justify-between gap-4 md:gap-0">
                 <div className="flex items-center gap-3">
                     <Heading title={`${data.make} ${data.model}`} />
                     {user?.username === data.seller && (
@@ -28,12 +26,12 @@ export default async function Details({ params }: { params: Promise<{ id: string
                     )}
                 </div>
                 <div className="flex gap-3">
-                    <h3 className="text-2xl font-semibold">Time remaining:</h3>
+                    <h3 className="text-lg md:text-2xl font-semibold">Time remaining:</h3>
                     <CountdownTimer auctionEnd={data.auctionEnd} />
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mt-3">
                 <div className="relative w-full bg-gray-200 aspect-16/10
                 rounded-lg overflow-hidden">
                     <CarImage imageUrl={data.imageUrl} />

@@ -7,7 +7,7 @@ export default async function Update({ params }: { params: Promise<{ id: string 
     const data = await getDetailsViewData(id);
 
     return (
-        <div className="mx-auto max-w-[75%] shadow-lg p-10 bg-white rounded-lg">
+        <div className="mx-auto max-w-full md:max-w-[90%] lg:max-w-[75%] shadow-lg p-4 md:p-10 bg-white rounded-lg">
             <Heading title="Update your auction" subtitle="Please update the details for your car 
             (only these auction properties can be updated)" />
             <AuctionForm auction={data} />

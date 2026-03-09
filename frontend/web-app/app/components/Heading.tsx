@@ -7,8 +7,8 @@ type Props = {
 export default function Heading({ title, subtitle, center }: Props) {
     return (
         <div className={center ? "text-center" : "text-start"}>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            {subtitle && <p className="font-light text-neutral-500 mt-2">{subtitle}</p>}
+            <h1 className="text-xl md:text-2xl font-bold">{title}</h1>
+            {subtitle && <p className="font-light text-neutral-500 mt-2 text-sm md:text-base">{subtitle}</p>}
         </div>
     );
 }

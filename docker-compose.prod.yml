@@ -1,0 +1,122 @@
+services:
+  auction-svc:
+    image: auction-svc
+    build:
+      context: .
+      dockerfile: src/AuctionService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=AuctionDb;User Id=postgres;Password=postgrespw;
+      - IdentityServerUrl=http://identity-svc
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
+      - Kestrel__Endpoints__Grpc__Url=http://+:7777
+      - Kestrel__Endpoints__WebApi__Protocols=Http1
+      - Kestrel__Endpoints__WebApi__Url=Http://+:80
+    ports:
+      - 7001:80
+      - 7777:7777
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  search-svc:
+    image: search-svc
+    build:
+      context: .
+      dockerfile: src/SearchService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__MongoDbConnection=mongodb://root:mongopw@mongodb:27017
+      - AuctionServiceUrl=http://auction-svc
+    ports:
+      - 7002:80
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  identity-svc:
+    image: identity-svc
+    build:
+      context: .
+      dockerfile: src/IdentityService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - IssuerUri=https://id.autobid.local
+      - ClientApp=https://app.autobid.local
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgrespw;
+      - VIRTUAL_HOST=id.autobid.local
+    ports:
+      - 5001:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+  gateway-svc:
+    image: gateway-svc
+    build:
+      context: .
+      dockerfile: src/GatewayService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - ClientApp=https://app.autobid.local
+      - VIRTUAL_HOST=api.autobid.local
+    ports:
+      - 6001:80
+    depends_on:
+      - postgres
+  bid-svc:
+    image: bid-svc
+    build:
+      context: .
+      dockerfile: src/BiddingService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__BidDbConnection=mongodb://root:mongopw@mongodb:27017
+      - IdentityServerUrl=http://identity-svc
+      - GrpcAuction=http://auction-svc:7777
+    ports:
+      - 7003:80
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  notify-svc:
+    image: notify-svc
+    build:
+      context: .
+      dockerfile: src/NotificationService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+    ports:
+      - 7004:80
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  web-app:
+    image: web-app
+    build:
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+    volumes:
+     - /var/lib/web/data
+    environment:
+      - AUTH_SECRET=3028bc2e7e3ecfc1f14ef13c824477e479c65d710fd773b6fde952465da556a9
+      - API_URL=http://gateway-svc/
+      - ID_URL=https://id.autobid.local
+      - ID_URL_INTERNAL=http://identity-svc
+      - AUTH_URL=https://app.autobid.local
+      - AUTH_URL_INTERNAL=http://web-app:3000
+      - VIRTUAL_HOST=app.autobid.local
+      - VIRTUAL_PORT=3000

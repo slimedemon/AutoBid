@@ -64,7 +64,7 @@ export default function AuctionForm({ auction }: Props) {
             <Input name="color" label="Color" control={control}
                 rules={{ required: 'Color is required' }} />
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Input name="year" label="Year" type="number" control={control}
                     rules={{ required: 'Year is required' }} />
                 <Input name="mileage" label="Mileage" type="number" control={control}
@@ -76,7 +76,7 @@ export default function AuctionForm({ auction }: Props) {
                     <Input name="imageUrl" label="Image URL" control={control}
                         rules={{ required: 'Image URL is required' }} />
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <Input name="reservePrice" label="Reserve Price (Enter 0 if no reserve)" control={control}
                             type="number" rules={{ required: 'Reserve Price is required' }} />
                         <DateInput

@@ -9,7 +9,7 @@ export default function CurrentBid({ amount, reservePrice }: Props) {
     return (
         <div className={`
             border-2 border-white text-white py-1 px-2 rounded-lg flex
-            justify-center ${color}
+            justify-center text-xs md:text-sm ${color}
         `}>
             {text}
         </div>
