@@ -3,7 +3,6 @@ using AuctionService.Data;
 using AuctionService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,3 +67,5 @@ catch (Exception ex)
 }
 
 app.Run();
+
+public partial class Program { }

@@ -32,14 +32,14 @@ public class AuctionController: ControllerBase
         return await _auctionRepository.GetAuctionsAsync(updatedAfter);
     }
 
-    [HttpGet("{id:Guid}")]
-    public async Task<ActionResult<AuctionDto>> GetAutionById(Guid id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AuctionDto>> GetAuctionById(Guid id)
     {
         var auction = await _auctionRepository.GetAuctionByIdAsync(id);
 
         if(auction is null) return NotFound();
 
-        return Ok(auction);
+        return auction;
     }
 
     [Authorize]
@@ -62,7 +62,7 @@ public class AuctionController: ControllerBase
         if(!result) return BadRequest("Failed to create auction");       
 
         return CreatedAtAction(
-            nameof(GetAutionById), 
+            nameof(GetAuctionById), 
             new { id = auction.Id }, 
             newAuction
         );
@@ -93,7 +93,7 @@ public class AuctionController: ControllerBase
 
         if(!result) return BadRequest("Failed to update auction");
 
-        return Ok(_mapper.Map<AuctionDto>(auction));
+        return _mapper.Map<AuctionDto>(auction);
     }
 
     [Authorize]
