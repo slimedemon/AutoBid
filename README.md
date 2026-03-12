@@ -11,7 +11,7 @@ AutoBid is a microservices-based auction platform built with .NET and Next.js. I
 - REST and gRPC communication across services
 
 ## Technology Stack
-- Backend: .NET 8+, C#, Duende IdentityServer, MassTransit, EF Core, SignalR
+- Backend: .NET 8+, C#, Duende IdentityServer, MassTransit, EF Core, SignalR, Grpc
 - Frontend: Next.js, React, TypeScript, Tailwind CSS
 - Databases: PostgreSQL, MongoDB
 - Infrastructure: Docker, Kubernetes, RabbitMQ, Nginx, YARP
