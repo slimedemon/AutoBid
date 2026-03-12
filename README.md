@@ -16,6 +16,44 @@ AutoBid is a microservices-based auction platform built with .NET and Next.js. I
 - Databases: PostgreSQL, MongoDB
 - Infrastructure: Docker, Kubernetes, RabbitMQ, Nginx, YARP
 
+## Web App Environment Files (.env.*)
+
+The Next.js app in frontend/web-app uses .env files for auth and API URLs.
+
+### Which Files to Create
+- frontend/web-app/.env.local: used for local development (npm run dev)
+- frontend/web-app/.env.production.local: used for production-style frontend runtime
+
+### Create from Example Files
+
+Windows (PowerShell):
+```powershell
+Copy-Item frontend/web-app/.example.env.local frontend/web-app/.env.local
+Copy-Item frontend/web-app/.example.env.production.local frontend/web-app/.env.production.local
+```
+
+macOS/Linux:
+```bash
+cp frontend/web-app/.example.env.local frontend/web-app/.env.local
+cp frontend/web-app/.example.env.production.local frontend/web-app/.env.production.local
+```
+
+### Required Variables
+In frontend/web-app/.env.local:
+- AUTH_SECRET
+- API_URL
+- ID_URL
+- AUTH_URL
+- NEXT_PUBLIC_NOTIFY_URL
+
+In frontend/web-app/.env.production.local:
+- NEXT_PUBLIC_NOTIFY_URL
+
+### Important Notes
+- Replace AUTH_SECRET with your own secure value for real deployments.
+- Do not commit real secrets. frontend/web-app/.gitignore ignores .env* by default.
+- If you run the web app via Docker Compose, environment variables are already supplied by compose for the web-app container.
+
 ## Local Development with Docker Compose
 
 ### Prerequisites
@@ -120,7 +158,7 @@ mkcert -install
 3. Generate cert and key into devcerts.
 
 ```bash
-mkcert -cert-file devcerts/autobid.local.crt -key-file devcerts/autobid.local.key "*.autobid.local" autobid.local
+mkcert -cert-file devcerts/autobid.local.crt -key-file devcerts/autobid.local.key app.autobid.local api.autobid.local id.autobid.local
 ```
 
 4. Verify the files exist before starting containers.
