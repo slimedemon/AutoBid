@@ -18,38 +18,34 @@ AutoBid is a microservices-based auction platform built with .NET and Next.js. I
 
 ## Web App Environment Files (.env.*)
 
-The Next.js app in frontend/web-app uses .env files for auth and API URLs.
+The Next.js app in frontend/web-app reads environment variables for auth and API endpoints.
 
-### Which Files to Create
-- frontend/web-app/.env.local: used for local development (npm run dev)
-
-### Create from Example Files
+### For Local Dev (npm run dev)
+Create frontend/web-app/.env.local from the checked-in example file.
 
 Windows (PowerShell):
 ```powershell
-Copy-Item frontend/web-app/.example.env.local frontend/web-app/.env.locals
+Copy-Item frontend/web-app/.example.env frontend/web-app/.env
 ```
 
 macOS/Linux:
 ```bash
-cp frontend/web-app/.example.env.local frontend/web-app/.env.local
+cp frontend/web-app/.example.env frontend/web-app/.env
 ```
 
-### Required Variables
-In frontend/web-app/.env.local:
+Required in frontend/web-app/.env:
 - AUTH_SECRET
 - API_URL
 - ID_URL
 - AUTH_URL
 - NEXT_PUBLIC_NOTIFY_URL
 
-In frontend/web-app/.env.production.local:
-- NEXT_PUBLIC_NOTIFY_URL
+### For Docker Compose
+If you run the web app via Docker Compose, variables are already provided for the web-app container in compose files. You usually do not need a local .env.local for the containerized app.
 
 ### Important Notes
 - Replace AUTH_SECRET with your own secure value for real deployments.
 - Do not commit real secrets. frontend/web-app/.gitignore ignores .env* by default.
-- If you run the web app via Docker Compose, environment variables are already supplied by compose for the web-app container.
 
 ## Local Development with Docker Compose
 
@@ -107,7 +103,7 @@ docker compose logs -f
 
 For full service configuration, see docker-compose.yml and docker-compose.override.yml.
 
-## Production with Docker Compose
+## Local Production with Docker Compose
 
 ### Prerequisites
 - Docker Desktop (or Docker Engine + Compose plugin)
@@ -200,4 +196,190 @@ Follow logs:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
+```
+
+## Kubernetes with Local Cluster
+
+This repository includes Kubernetes manifests for running the full AutoBid stack on a local cluster with ingress and TLS.
+
+### Prerequisites
+- A local Kubernetes cluster that can run Linux containers
+- kubectl configured to talk to that cluster
+- Docker for building the application images
+- mkcert installed for local TLS certificates
+
+Supported local cluster options:
+- Docker Desktop Kubernetes
+- Minikube
+- kind
+
+Important: the application deployments in infra/K8S use imagePullPolicy: Never. Build the images locally first, then make sure your cluster can see them. Docker Desktop may share the local image store directly. Minikube and kind usually require an explicit image load step.
+
+### Configure Hostnames
+The ingress manifest exposes three local domains:
+
+- app.autobid.local
+- api.autobid.local
+- id.autobid.local
+
+Add them to your hosts file.
+
+For Docker Desktop Kubernetes, map them to localhost:
+
+- 127.0.0.1 app.autobid.local
+- 127.0.0.1 api.autobid.local
+- 127.0.0.1 id.autobid.local
+
+For Minikube or another cluster where the ingress controller gets a different external IP, replace 127.0.0.1 with that IP.
+
+Hosts file locations:
+- Windows: C:\Windows\System32\drivers\etc\hosts
+- Linux/macOS: /etc/hosts
+
+### Create Local TLS Certificates
+Install and trust the local certificate authority once:
+
+```bash
+mkcert -install
+```
+
+Generate a certificate that matches the ingress hosts:
+
+```bash
+mkcert -cert-file devcerts/autobid.local.crt -key-file devcerts/autobid.local.key app.autobid.local api.autobid.local id.autobid.local
+```
+
+Create the Kubernetes TLS secret used by the ingress:
+
+```bash
+kubectl create secret tls autobid-app-tls --cert=devcerts/autobid.local.crt --key=devcerts/autobid.local.key
+```
+
+If the secret already exists, recreate it with:
+
+```bash
+kubectl delete secret autobid-app-tls
+kubectl create secret tls autobid-app-tls --cert=devcerts/autobid.local.crt --key=devcerts/autobid.local.key
+```
+
+### Build the Application Images
+Build the images with the same tags referenced by the Kubernetes manifests:
+
+```bash
+docker compose build auction-svc search-svc bid-svc notify-svc identity-svc gateway-svc web-app
+```
+
+If your cluster does not automatically see locally built images, load them explicitly.
+
+Minikube:
+
+```bash
+minikube image load slimedemon/auction-svc slimedemon/search-svc slimedemon/bid-svc slimedemon/notify-svc slimedemon/identity-svc slimedemon/gateway-svc slimedemon/web-app
+```
+
+kind:
+
+```bash
+kind load docker-image slimedemon/auction-svc slimedemon/search-svc slimedemon/bid-svc slimedemon/notify-svc slimedemon/identity-svc slimedemon/gateway-svc slimedemon/web-app
+```
+
+### Deploy the Ingress Controller
+Apply the bundled ingress-nginx manifests first:
+
+```bash
+kubectl apply -f infra/ingress/ingress-depl.yml
+kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx
+```
+
+If you are using Minikube, run the tunnel in a separate terminal so the LoadBalancer service gets an external IP:
+
+```bash
+minikube tunnel
+```
+
+### Deploy AutoBid Manifests
+Apply storage, infrastructure services, configuration, application services, and the ingress resource:
+
+```bash
+kubectl apply -f infra/K8S/local-pvc.yml
+kubectl apply -f infra/K8S/postgres-depl.yml
+kubectl apply -f infra/K8S/mongo-depl.yml
+kubectl apply -f infra/K8S/rabbit-depl.yml
+kubectl apply -f infra/K8S/config.yml
+kubectl apply -f infra/K8S/auction-depl.yml
+kubectl apply -f infra/K8S/search-depl.yml
+kubectl apply -f infra/K8S/bid-depl.yml
+kubectl apply -f infra/K8S/notify-depl.yml
+kubectl apply -f infra/K8S/identity-depl.yml
+kubectl apply -f infra/K8S/gateway-depl.yml
+kubectl apply -f infra/K8S/webapp-depl.yml
+kubectl apply -f infra/K8S/ingress-svc.yml
+```
+
+### Verify the Deployment
+Check pods and services:
+
+```bash
+kubectl get pods
+kubectl get svc
+kubectl get ingress
+kubectl get svc -n ingress-nginx
+```
+
+Open the local ingress endpoints:
+
+- Web App: https://app.autobid.local
+- API Gateway: https://api.autobid.local
+- Identity Service: https://id.autobid.local
+
+Optional direct database and management access exposed by NodePort:
+
+- PostgreSQL: localhost:30001
+- RabbitMQ Management: http://localhost:30002
+- MongoDB: localhost:30003
+
+### Useful Commands
+Show deployment status:
+
+```bash
+kubectl get deployments
+kubectl get pods -o wide
+```
+
+Follow logs for one service:
+
+```bash
+kubectl logs -f deployment/gateway-svc
+```
+
+Restart a deployment after rebuilding an image:
+
+```bash
+kubectl rollout restart deployment/auction-svc
+```
+
+### Stop and Clean Up
+Delete the AutoBid resources:
+
+```bash
+kubectl delete -f infra/K8S/ingress-svc.yml
+kubectl delete -f infra/K8S/webapp-depl.yml
+kubectl delete -f infra/K8S/gateway-depl.yml
+kubectl delete -f infra/K8S/identity-depl.yml
+kubectl delete -f infra/K8S/notify-depl.yml
+kubectl delete -f infra/K8S/bid-depl.yml
+kubectl delete -f infra/K8S/search-depl.yml
+kubectl delete -f infra/K8S/auction-depl.yml
+kubectl delete -f infra/K8S/config.yml
+kubectl delete -f infra/K8S/rabbit-depl.yml
+kubectl delete -f infra/K8S/mongo-depl.yml
+kubectl delete -f infra/K8S/postgres-depl.yml
+kubectl delete -f infra/K8S/local-pvc.yml
+kubectl delete secret autobid-app-tls
+```
+
+Delete the ingress controller when you no longer need it:
+
+```bash
+kubectl delete -f infra/ingress/ingress-depl.yml
 ```
