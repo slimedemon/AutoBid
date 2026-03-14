@@ -30,16 +30,12 @@ export default function BidList({ user, auction }: Props) {
         : current.bidStatus.includes('Accepted') ? current.amount : prev, 0);
 
     useEffect(() => {
-        console.log('==> Fetching bids for auction: ', auction.id);
         getBidsForAuction(auction.id).then((res: any) => {
-            console.log('==> Response from getBidsForAuction: ', res);
             if (res.error) {
                 throw res.error;
             }
-            console.log('==> Bids: ', res);
             setBids(res as Bid[]);
         }).catch((error: any) => {
-            console.error('==> Error fetching bids: ', error.message);
             toast.error(error.message)
         }).finally(() => setLoading(false))
 

@@ -4,7 +4,6 @@ import { useAuctionStore } from "@/hooks/useAuctionStore";
 import { useBidStore } from "@/hooks/useBidStore";
 import { Auction, AuctionFinished, Bid } from "@/types";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { User } from "next-auth";
 import { useParams } from "next/navigation";
 import { ReactNode, useCallback, useEffect, useRef } from "react"
 import toast from "react-hot-toast";
@@ -52,6 +51,8 @@ export default function SignalRProvider({ children }: Props) {
     }, [setCurrentPrice, addBid, params.id]);
 
     useEffect(() => {
+        console.log("Hub url: ", process.env.NEXT_PUBLIC_NOTIFY_URL);
+
         if (!connection.current) {
             connection.current = new HubConnectionBuilder()
                 .withUrl(process.env.NEXT_PUBLIC_NOTIFY_URL!)

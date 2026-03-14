@@ -22,20 +22,17 @@ The Next.js app in frontend/web-app uses .env files for auth and API URLs.
 
 ### Which Files to Create
 - frontend/web-app/.env.local: used for local development (npm run dev)
-- frontend/web-app/.env.production.local: used for production-style frontend runtime
 
 ### Create from Example Files
 
 Windows (PowerShell):
 ```powershell
-Copy-Item frontend/web-app/.example.env.local frontend/web-app/.env.local
-Copy-Item frontend/web-app/.example.env.production.local frontend/web-app/.env.production.local
+Copy-Item frontend/web-app/.example.env.local frontend/web-app/.env.locals
 ```
 
 macOS/Linux:
 ```bash
 cp frontend/web-app/.example.env.local frontend/web-app/.env.local
-cp frontend/web-app/.example.env.production.local frontend/web-app/.env.production.local
 ```
 
 ### Required Variables

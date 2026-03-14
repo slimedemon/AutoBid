@@ -51,6 +51,41 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./devcerts:/etc/nginx/certs
+  auction-svc:
+    image: slimedemon/auction-svc
+    build:
+      context: .
+      dockerfile: src/AuctionService/Dockerfile
+  search-svc:
+    image: slimedemon/search-svc
+    build:
+      context: .
+      dockerfile: src/SearchService/Dockerfile
+  identity-svc:
+    image: slimedemon/identity-svc
+    build:
+      context: .
+      dockerfile: src/IdentityService/Dockerfile
+  gateway-svc:
+    image: slimedemon/gateway-svc
+    build:
+      context: .
+      dockerfile: src/GatewayService/Dockerfile
+  bid-svc:
+    image: slimedemon/bid-svc
+    build:
+      context: .
+      dockerfile: src/BiddingService/Dockerfile
+  notify-svc:
+    image: slimedemon/notify-svc
+    build:
+      context: .
+      dockerfile: src/NotificationService/Dockerfile
+  web-app:
+    image: slimedemon/web-app
+    build:
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
 volumes:
   pgdata:
   mongodata:

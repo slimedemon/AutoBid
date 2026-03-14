@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auction-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80;http://+:7777
+  RabbitMq__Host: rabbit-clusterip
+  RabbitMq__Username: rabbit
+  RabbitMq__Password: rabbitpw
+  ConnectionStrings__DefaultConnection: Server=postgres-clusterip;Port=5432;Database=AuctionDb;User Id=postgres;Password=postgrespw;
+  IdentityServerUrl: http://identity-clusterip
+  Kestrel__Endpoints__Grpc__Protocols: Http2
+  Kestrel__Endpoints__Grpc__Url: http://+:7777
+  Kestrel__Endpoints__WebApi__Protocols: Http1
+  Kestrel__Endpoints__WebApi__Url: http://+:80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: search-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80
+  RabbitMq__Host: rabbit-clusterip
+  RabbitMq__Username: rabbit
+  RabbitMq__Password: rabbitpw
+  ConnectionStrings__MongoDbConnection: mongodb://root:mongopw@mongo-clusterip
+  AuctionServiceUrl: http://auction-clusterip
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bid-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80
+  RabbitMq__Host: rabbit-clusterip
+  RabbitMq__Username: rabbit
+  RabbitMq__Password: rabbitpw
+  ConnectionStrings__BidDbConnection: mongodb://root:mongopw@mongo-clusterip
+  IdentityServerUrl: http://identity-clusterip
+  GrpcAuction: http://auction-clusterip:7777
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notify-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80
+  RabbitMq__Host: rabbit-clusterip
+  RabbitMq__Username: rabbit
+  RabbitMq__Password: rabbitpw
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80
+  IdentityServerUrl: http://identity-clusterip
+  ClientApp: https://app.autobid.local
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-svc-config
+data:
+  ASPNETCORE_URLS: http://+:80
+  IssuerUri: https://id.autobid.local
+  ClientApp: https://app.autobid.local
+  ConnectionStrings__DefaultConnection: Server=postgres-clusterip;Port=5432;Database=IdentityDb;User Id=postgres;Password=postgrespw;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-svc-config
+data:
+  AUTH_SECRET: 3028bc2e7e3ecfc1f14ef13c824477e479c65d710fd773b6fde952465da556a9
+  API_URL: http://gateway-clusterip/
+  ID_URL: https://id.autobid.local
+  ID_URL_INTERNAL: http://identity-clusterip
+  AUTH_URL: https://app.autobid.local
+  AUTH_URL_INTERNAL: http://web-app:3000
+  NEXT_PUBLIC_NOTIFY_URL: https://api.autobid.local/notifications

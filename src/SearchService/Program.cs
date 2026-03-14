@@ -1,5 +1,6 @@
 using Contracts;
 using MassTransit;
+using Polly;
 using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.RequestHelper;
@@ -57,15 +58,12 @@ app.MapControllers();
 
 app.Lifetime.ApplicationStarted.Register(async () =>
 {
-    try
-    {
-        await DbInitializer.InitializeAsync(app);
-    }
-    catch (Exception ex)
-    {
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while initializing the database.");
-    }  
+    await Policy.Handle<TimeoutException>()
+        .WaitAndRetryAsync(10, retryAttempt => TimeSpan.FromSeconds(10))
+        .ExecuteAndCaptureAsync(async () =>
+        {
+            await DbInitializer.InitializeAsync(app);
+        });
 });
 
 app.Run();

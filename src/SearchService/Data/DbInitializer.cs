@@ -29,6 +29,8 @@ public class DbInitializer
             var auctionClient = scope.ServiceProvider.GetRequiredService<AuctionSvcHttpClient>();
             var items = await auctionClient.GetItemsAsync();
 
+            app.Logger.LogInformation($"Seeding SearchDb with initial auction items: {items.Count} items found.");
+
             await DB.SaveAsync(items);
         }            
     }

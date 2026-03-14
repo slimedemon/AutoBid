@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-svc
+  labels:
+    app.kubernetes.io/name: ingress-svc
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - app.autobid.local
+    - api.autobid.local
+    - id.autobid.local
+    secretName: autobid-app-tls
+  rules:
+  - host: app.autobid.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: webapp-clusterip
+            port: 
+              number: 3000
+  - host: api.autobid.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: gateway-clusterip
+            port: 
+              number: 80
+  - host: id.autobid.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: identity-clusterip
+            port: 
+              number: 80
