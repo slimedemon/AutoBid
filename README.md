@@ -21,7 +21,7 @@ AutoBid is a microservices-based auction platform built with .NET and Next.js. I
 The Next.js app in frontend/web-app reads environment variables for auth and API endpoints.
 
 ### For Local Dev (npm run dev)
-Create frontend/web-app/.env.local from the checked-in example file.
+Create frontend/web-app/.env from the checked-in example file.
 
 Windows (PowerShell):
 ```powershell
