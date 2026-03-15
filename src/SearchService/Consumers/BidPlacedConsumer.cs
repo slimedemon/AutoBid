@@ -1,6 +1,7 @@
 using System;
 using Contracts;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using MongoDB.Entities;
 using SearchService.Models;
 
@@ -8,9 +9,16 @@ namespace SearchService.Consumers;
 
 public class BidPlacedConsumer : IConsumer<BidPlaced>
 {
+    private readonly ILogger<BidPlacedConsumer> _logger;
+
+    public BidPlacedConsumer(ILogger<BidPlacedConsumer> logger)
+    {
+        _logger = logger;
+    }
+
     public async Task Consume(ConsumeContext<BidPlaced> context)
     {
-        Console.WriteLine("-->  Consuming Bid Placed");
+        _logger.LogInformation("Consuming BidPlaced for auction {AuctionId}", context.Message.AuctionId);
 
         var auction = await DB.Find<Item>()
             .OneAsync(context.Message.AuctionId);

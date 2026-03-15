@@ -1,5 +1,6 @@
 using System.Globalization;
 using Duende.IdentityServer;
+using IdentityService.Exceptions;
 using IdentityService.Data;
 using IdentityService.Models;
 using IdentityService.Services;
@@ -50,6 +51,8 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorPages();
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -110,6 +113,7 @@ internal static class HostingExtensions
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
+        app.UseExceptionHandler();
 
         if (app.Environment.IsDevelopment())
         {

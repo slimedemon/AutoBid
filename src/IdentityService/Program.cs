@@ -37,7 +37,7 @@ try
         app.Lifetime.ApplicationStopping.Register(() =>
         {
             var usage = app.Services.GetRequiredService<LicenseUsageSummary>();
-            Console.Write(Summary(usage));
+            Log.Information("{UsageSummary}", Summary(usage));
         });
     }
 

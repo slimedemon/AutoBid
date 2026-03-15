@@ -1,9 +1,12 @@
 using MassTransit;
 using NotificationService.Consumers;
+using NotificationService.Exceptions;
 using NotificationService.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
@@ -24,6 +27,8 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.MapHub<NotificationHub>("/notifications");
 

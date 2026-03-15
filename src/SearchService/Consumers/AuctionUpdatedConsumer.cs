@@ -1,6 +1,7 @@
 using AutoMapper;
 using Contracts;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using MongoDB.Entities;
 using SearchService.Models;
 
@@ -9,15 +10,17 @@ namespace SearchService.Consumers;
 public class AuctionUpdatedConsumer : IConsumer<AuctionUpdated>
 {
     private readonly IMapper _mapper;
+    private readonly ILogger<AuctionUpdatedConsumer> _logger;
 
-    public AuctionUpdatedConsumer(IMapper mapper)
+    public AuctionUpdatedConsumer(IMapper mapper, ILogger<AuctionUpdatedConsumer> logger)
     {
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task Consume(ConsumeContext<AuctionUpdated> context)
     {
-        Console.WriteLine("--> Consuming auction updated: " + context.Message.Id);
+        _logger.LogInformation("Consuming auction updated: {AuctionId}", context.Message.Id);
 
         var update = DB.Update<Item>()
             .Match(i => i.ID == context.Message.Id);

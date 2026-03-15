@@ -1,6 +1,7 @@
 using Contracts;
 using MassTransit;
 using Polly;
+using SearchService.Exceptions;
 using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.RequestHelper;
@@ -9,6 +10,8 @@ using SearchService.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(HttpPollyHelper.GetAsyncPolicy());
 
@@ -22,23 +25,7 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, configure) =>
     {
-        configure.ReceiveEndpoint("search-auction-created", e =>
-        {
-            e.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
-            e.ConfigureConsumer<AuctionCreatedConsumer>(context);
-        });
-    
-        configure.ReceiveEndpoint("search-auction-updated", e =>
-        {
-            e.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
-            e.ConfigureConsumer<AuctionUpdatedConsumer>(context);
-        });
-
-        configure.ReceiveEndpoint("search-auction-deleted", e =>
-        {
-            e.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
-            e.ConfigureConsumer<AuctionDeletedConsumer>(context);
-        });
+        configure.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
 
         configure.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
         {
@@ -51,6 +38,8 @@ builder.Services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseAuthorization();
 

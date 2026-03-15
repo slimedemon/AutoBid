@@ -1,13 +1,21 @@
 using Contracts;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace AuctionService.Consumers;
 
 public class AuctionCreatedFaultConsumer : IConsumer<Fault<AuctionCreated>>
 {
+    private readonly ILogger<AuctionCreatedFaultConsumer> _logger;
+
+    public AuctionCreatedFaultConsumer(ILogger<AuctionCreatedFaultConsumer> logger)
+    {
+        _logger = logger;
+    }
+
     public async Task Consume(ConsumeContext<Fault<AuctionCreated>> context)
     {
-        Console.WriteLine($"--> Consuming faulty creation");
+        _logger.LogInformation("Consuming faulty auction creation");
 
         var exception = context.Message.Exceptions.First();
 
@@ -18,7 +26,7 @@ public class AuctionCreatedFaultConsumer : IConsumer<Fault<AuctionCreated>>
         }
         else
         {
-            Console.WriteLine($"--> Fault is not recoverable: {exception?.ExceptionType}");
+            _logger.LogWarning("Fault is not recoverable: {ExceptionType}", exception?.ExceptionType);
         }
 
     }
