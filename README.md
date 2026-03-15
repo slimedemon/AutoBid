@@ -3,6 +3,15 @@
 ## Overview
 AutoBid is a microservices-based auction platform built with .NET and Next.js. It enables users to create auctions and place bids in real time, using an event-driven architecture designed for scalability and maintainability.
 
+## Demo
+<p align="center">
+	<img src="images/Demo1.png" alt="AutoBid demo screen 1" width="80%" />
+    <br/>
+    <br/>
+	<img src="images/Demo2.png" alt="AutoBid demo screen 2" width="80%" />
+</p>
+
+
 ## Key Features
 - Real-time bidding workflow
 - User authentication and authorization
