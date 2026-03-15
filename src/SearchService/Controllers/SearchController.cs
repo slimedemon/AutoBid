@@ -1,5 +1,4 @@
 
-using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Entities;
 using SearchService.Models;
@@ -9,16 +8,17 @@ namespace SearchService.Controllers;
 
 [ApiController]
 [Route("api/search")]
-public class SearchController: ControllerBase
+public class SearchController : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<Item>>> SearchAsync([FromQuery] SearchParams searchParams)
     {
         var query = DB.PagedSearch<Item, Item>();
 
-        if(!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
+        if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
         {
-            query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
+            query.Match(i => i.Make.ToLower().Contains(searchParams.SearchTerm.ToLower())
+                || i.Model.ToLower().Contains(searchParams.SearchTerm.ToLower()));
         }
 
         query = searchParams.OrderBy?.ToLower() switch
@@ -42,13 +42,13 @@ public class SearchController: ControllerBase
             query.Match(i => i.Seller == searchParams.Seller);
         }
 
-        if(!string.IsNullOrWhiteSpace(searchParams.Winner))
+        if (!string.IsNullOrWhiteSpace(searchParams.Winner))
         {
             query.Match(i => i.Winner == searchParams.Winner);
         }
-            
+
         query.PageSize(searchParams.PageSize);
-        query.PageNumber(searchParams.PageNumber);    
+        query.PageNumber(searchParams.PageNumber);
 
         var result = await query.ExecuteAsync();
 
