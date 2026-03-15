@@ -17,8 +17,7 @@ public class SearchController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
         {
-            query.Match(i => i.Make.ToLower().Contains(searchParams.SearchTerm.ToLower())
-                || i.Model.ToLower().Contains(searchParams.SearchTerm.ToLower()));
+            query.Match(i => $"{i.Make} {i.Model}".ToLower().Contains(searchParams.SearchTerm.ToLower()));
         }
 
         query = searchParams.OrderBy?.ToLower() switch
